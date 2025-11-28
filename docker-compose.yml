@@ -1,0 +1,79 @@
+services:
+  # ---------------------------
+  # 1. MongoDB Service
+  # ---------------------------
+  mongodb:
+    image: mongo:latest
+    container_name: my-mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+#    environment:
+#      MONGO_INITDB_ROOT_USERNAME: admin
+#      MONGO_INITDB_ROOT_PASSWORD: mongopassword
+    volumes:
+      - ./data/mongo:/data/db
+    networks:
+      - backend-network
+
+  # ---------------------------
+  # 2. Redis Service
+  # ---------------------------
+  redis:
+    image: redis:latest
+    container_name: my-redis
+    restart: always
+    ports:
+      - "6379:6379"
+    command: redis-server --requirepass redispassword
+    volumes:
+      - ./data/redis:/data
+    networks:
+      - backend-network
+
+  # ---------------------------
+  # 3. Kafka Service (Official Apache Image, KRaft)
+  # ---------------------------
+  kafka:
+    image: apache/kafka:latest
+    container_name: my-kafka
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+
+      # 리스너 설정 (중요: 외부용, 내부용, 컨트롤러용 분리)
+      # CONTROLLER: 9093 (내부 관리용)
+      # INTERNAL: 9094 (도커 내부 통신 - Kafka UI 등)
+      # EXTERNAL: 9092 (내 컴퓨터 - 호스트 접속용)
+      KAFKA_LISTENERS: CONTROLLER://:9093,INTERNAL://:9094,EXTERNAL://:9092
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:9094,EXTERNAL://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+    volumes:
+      - ./data/kafka:/var/lib/kafka/data
+    networks:
+      - backend-network
+
+  # ---------------------------
+  # 4. Kafka UI
+  # ---------------------------
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: my-kafka-ui
+    depends_on:
+      - kafka
+    ports:
+      - "8989:8080"
+    environment:
+      - KAFKA_CLUSTERS_0_NAME=local-kraft
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9094
+    networks:
+      - backend-network
+
+networks:
+  backend-network:
+    driver: bridge
