@@ -38,7 +38,7 @@ class UserRepositoryImpl(UserRepository):
             "is_active": user.is_active
         }
 
-    def _to_entity(self, document: dict) -> User:
+    def _to_entity(self, document) -> User:
         return User(
             id=UserId(document["_id"]),
             username=document["username"],
