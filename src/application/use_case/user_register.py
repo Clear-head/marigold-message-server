@@ -21,7 +21,7 @@ class UserRegister:
         try:
             hashed_password = hash_password(register_schema.password)
             user = User.create(
-                user_id=UserId.generate().value,
+                user_id=register_schema.user_id,
                 username=register_schema.username,
                 password=hashed_password,
                 email=register_schema.email,
