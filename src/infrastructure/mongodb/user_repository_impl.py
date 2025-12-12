@@ -26,6 +26,10 @@ class UserRepositoryImpl(UserRepository):
         document = await self.collection.find_one({"email": email})
         return self._to_entity(document) if document else None
 
+    async def find_by_phone_number(self, phone_number: str) -> Optional[User]:
+        document = await self.collection.find_one({"phone_number": phone_number})
+        return self._to_entity(document) if document else None
+
     async def update(self, user: User) -> None:
         document = self._to_document(user)
         await self.collection.replace_one({"_id": user.id.value}, document)

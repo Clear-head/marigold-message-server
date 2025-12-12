@@ -12,7 +12,7 @@ class User:
             email: str,
             phone_number: str,
             birth_date: datetime,
-            gender: str,
+            gender: bool,
             created_at: datetime,
             is_active: bool = True
     ):
@@ -35,7 +35,7 @@ class User:
             email: str,
             phone_number: str,
             birth_date: datetime,
-            gender: str,
+            gender: bool,
             created_at: datetime = None
     ) -> 'User':
         return cls(

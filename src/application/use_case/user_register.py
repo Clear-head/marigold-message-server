@@ -3,20 +3,22 @@ from src.controller.schema.register_schema import RegisterSchema
 from src.domain.entity.user import User
 from src.domain.exception.domain_exception import DomainException
 from src.domain.exception.user_already_exists_exception import UserAlreadyExistsException
-from src.domain.repository.user_repository import UserRepository
-from src.domain.value_object.user_id import UserId
+from src.infrastructure.mongodb.user_repository_impl import UserRepositoryImpl
 
 
 class UserRegister:
-    def __init__(self, user_repository: UserRepository):
+    def __init__(self, user_repository: UserRepositoryImpl):
         self.user_repository = user_repository
 
     async def execute(self, register_schema: RegisterSchema) -> User:
-        if await self.user_repository.find_by_username(register_schema.username):
-            raise UserAlreadyExistsException(f"Username '{register_schema.username}' already exists.")
+        if await self.user_repository.find_by_id(register_schema.user_id):
+            raise UserAlreadyExistsException(f"User ID '{register_schema.user_id}' already exists.")
 
         if await self.user_repository.find_by_email(register_schema.email):
             raise UserAlreadyExistsException(f"Email '{register_schema.email}' already exists.")
+
+        if await self.user_repository.find_by_phone_number(register_schema.phone_number):
+            raise UserAlreadyExistsException(f"Phone number '{register_schema.phone_number}' already exists.")
 
         try:
             hashed_password = hash_password(register_schema.password)

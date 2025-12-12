@@ -22,6 +22,10 @@ class UserRepository(ABC):
         pass
 
     @abstractmethod
+    async def find_by_phone_number(self, phone_number: str) -> Optional[User]:
+        pass
+
+    @abstractmethod
     async def update(self, user: User) -> None:
         pass
 
