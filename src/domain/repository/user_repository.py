@@ -14,6 +14,14 @@ class UserRepository(ABC):
         pass
 
     @abstractmethod
+    async def find_by_username(self, username: str) -> Optional[User]:
+        pass
+
+    @abstractmethod
+    async def find_by_email(self, email: str) -> Optional[User]:
+        pass
+
+    @abstractmethod
     async def update(self, user: User) -> None:
         pass
 

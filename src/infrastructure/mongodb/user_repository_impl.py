@@ -18,6 +18,14 @@ class UserRepositoryImpl(UserRepository):
         document = await self.collection.find_one({"_id": user_id})
         return self._to_entity(document) if document else None
 
+    async def find_by_username(self, username: str) -> Optional[User]:
+        document = await self.collection.find_one({"username": username})
+        return self._to_entity(document) if document else None
+
+    async def find_by_email(self, email: str) -> Optional[User]:
+        document = await self.collection.find_one({"email": email})
+        return self._to_entity(document) if document else None
+
     async def update(self, user: User) -> None:
         document = self._to_document(user)
         await self.collection.replace_one({"_id": user.id.value}, document)
@@ -34,6 +42,11 @@ class UserRepositoryImpl(UserRepository):
         return {
             "_id": user.id.value,
             "username": user.username,
+            "password": user.password,
+            "email": user.email,
+            "phone_number": user.phone_number,
+            "birth_date": user.birth_date,
+            "gender": user.gender,
             "created_at": user.created_at,
             "is_active": user.is_active
         }
@@ -42,6 +55,11 @@ class UserRepositoryImpl(UserRepository):
         return User(
             id=UserId(document["_id"]),
             username=document["username"],
+            password=document["password"],
+            email=document["email"],
+            phone_number=document["phone_number"],
+            birth_date=document["birth_date"],
+            gender=document["gender"],
             created_at=document["created_at"],
             is_active=document["is_active"]
         )

@@ -8,11 +8,21 @@ class User:
             self,
             id: UserId,
             username: str,
+            password: str,
+            email: str,
+            phone_number: str,
+            birth_date: datetime,
+            gender: str,
             created_at: datetime,
             is_active: bool = True
     ):
         self.id = id
         self.username = username
+        self.password = password
+        self.email = email
+        self.phone_number = phone_number
+        self.birth_date = birth_date
+        self.gender = gender
         self.created_at = created_at
         self.is_active = is_active
 
@@ -21,11 +31,21 @@ class User:
             cls,
             user_id: str,
             username: str,
+            password: str,
+            email: str,
+            phone_number: str,
+            birth_date: datetime,
+            gender: str,
             created_at: datetime = None
     ) -> 'User':
         return cls(
             id=UserId(user_id),
             username=username,
+            password=password,
+            email=email,
+            phone_number=phone_number,
+            birth_date=birth_date,
+            gender=gender,
             created_at=created_at or datetime.now(),
             is_active=True
         )
